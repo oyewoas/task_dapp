@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Address, Chain } from "viem";
 import { formatEther } from "viem";
-import { useAppState } from "../store/context";
 import { publicClient } from "../utils/client";
 
 export function WalletBar({
