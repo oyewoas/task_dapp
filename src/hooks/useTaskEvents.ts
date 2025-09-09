@@ -2,10 +2,11 @@ import { useEffect, useRef, useCallback } from "react";
 import { useAppState } from "../store/context";
 import { useTaskRead } from "./useTaskRead";
 import { decodeEventLog, type Hash } from "viem";
+import { publicClient } from "../utils/client";
 
 export function useTaskEvents() {
   const { state, dispatch, abi } = useAppState();
-  const { contractAddress, publicClient } = state;
+  const { contractAddress } = state;
   const { loadTasks } = useTaskRead();
   const EventSwitch = useCallback(
     (eventName: string, args: Record<string, unknown> | undefined) => {

@@ -3,19 +3,14 @@ import type {
   Abi,
   Address,
   EIP1193Provider,
-  PublicClient,
-  WalletClient,
   Hash,
 } from "viem";
 import {
-  createPublicClient,
-  createWalletClient,
-  custom,
   decodeEventLog,
 } from "viem";
 import abi from "../utils/abi.json";
 import { Ctx } from "./context";
-
+import { walletClient, publicClient } from "../utils/client";
 const CONTRACT_ADDRESS =
   typeof import.meta.env.VITE_CONTRACT_ADDRESS === "string" &&
   import.meta.env.VITE_CONTRACT_ADDRESS.startsWith("0x")
@@ -28,8 +23,6 @@ export type LogEntry = { text: string; hash?: Hash };
 export type NoticeEntry = { text: string };
 
 export type AppState = {
-  publicClient: PublicClient | null;
-  walletClient: WalletClient | null;
   ethClient: EIP1193Provider | null;
   account: Address | null;
   contractAddress: Address | null;
@@ -45,8 +38,6 @@ export type AppState = {
 export type AppAction =
   | {
       type: "SET_CLIENTS";
-      publicClient: PublicClient | null;
-      walletClient: WalletClient | null;
       ethClient: EIP1193Provider | null;
       chainId: number | null;
       account: Address | null;
@@ -62,8 +53,6 @@ export type AppAction =
   | { type: "ERROR"; error: string };
 
 const initial: AppState = {
-  publicClient: null,
-  walletClient: null,
   ethClient: null,
   account: null,
   chainId: null,
@@ -81,8 +70,6 @@ function reducer(state: AppState, a: AppAction): AppState {
     case "SET_CLIENTS":
       return {
         ...state,
-        publicClient: a.publicClient,
-        walletClient: a.walletClient,
         ethClient: a.ethClient,
         chainId: a.chainId,
         account: a.account,
@@ -169,15 +156,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const eth = window.ethereum;
         if (!eth) return;
 
-        const wallet = createWalletClient({ transport: custom(eth) });
-        const pub = createPublicClient({ transport: custom(eth) });
-        const id = await wallet.getChainId();
-        const [addr] = await wallet.getAddresses();
+      
+        const id = await walletClient.getChainId();
+        const [addr] = await walletClient.getAddresses();
 
         // fetch historical logs safely
         try {
           if (!state.contractAddress) return;
-          const logs = await pub.getLogs({
+          const logs = await publicClient.getLogs({
             address: state.contractAddress,
             fromBlock: 0n,
             toBlock: "latest",
@@ -205,8 +191,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
         dispatch({
           type: "SET_CLIENTS",
-          publicClient: pub,
-          walletClient: wallet,
           ethClient: eth,
           chainId: id,
           account: addr ?? null,

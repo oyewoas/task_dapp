@@ -3,11 +3,11 @@ import { useCallback } from "react";
 import { useAppState } from "../store/context";
 import { getErrorMessage } from "../utils/errors";
 import type { Task } from "../types";
-
+import { publicClient } from "../utils/client";
 export function useTaskRead() {
   const { state, dispatch, abi } = useAppState();
-  const { contractAddress, publicClient } = state;
-    
+  const { contractAddress } = state;
+
   const loadTasks = useCallback(async () => {
     if (!contractAddress || !publicClient) return;
     dispatch({ type: "SET_LOADING", isLoading: true });

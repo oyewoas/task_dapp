@@ -3,10 +3,11 @@ import { useCallback, useMemo } from "react";
 import { useAppState } from "../store/context";
 import { defineChain } from "viem";
 import { getErrorMessage } from "../utils/errors";
+import { publicClient, walletClient } from "../utils/client";
 
 export function useTaskWrite() {
   const { state, dispatch, abi } = useAppState();
-  const { contractAddress, walletClient, chainId, account, publicClient } = state;
+  const { contractAddress, chainId, account } = state;
   const chain = useMemo(() => {
     if (!chainId) return undefined;
     return defineChain({
@@ -49,7 +50,7 @@ export function useTaskWrite() {
         dispatch({ type: "SET_TX", txPending: false });
       }
     },
-    [contractAddress, walletClient, account, abi, chain, dispatch, publicClient]
+    [contractAddress, account, abi, chain, dispatch]
   );
 
   return {

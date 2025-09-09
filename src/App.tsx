@@ -1,9 +1,6 @@
 // src/App.tsx
 import { useEffect, useMemo, useState } from "react";
 import {
-  createPublicClient,
-  createWalletClient,
-  custom,
   defineChain,
 } from "viem";
 import { WalletBar } from "./components/WalletBar";
@@ -18,13 +15,12 @@ import { useTaskEvents } from "./hooks/useTaskEvents";
 import type { Task } from "./types";
 import { useTaskRead } from "./hooks/useTaskRead";
 import { useTaskWrite } from "./hooks/useTaskWrite";
+import { publicClient, walletClient } from "./utils/client";
 
 function App() {
   const { state, dispatch } = useAppState();
   const {
     contractAddress,
-    walletClient,
-    publicClient,
     account,
     chainId,
     ethClient,
@@ -62,14 +58,10 @@ function App() {
     const eth = window.ethereum;
     if (!eth) return;
     try {
-      const wallet = createWalletClient({ transport: custom(eth) });
-      const pub = createPublicClient({ transport: custom(eth) });
-      const id = await wallet.getChainId();
-      const [addr] = await wallet.requestAddresses();
+      const id = await walletClient.getChainId();
+      const [addr] = await walletClient.requestAddresses();
       dispatch({
         type: "SET_CLIENTS",
-        publicClient: pub,
-        walletClient: wallet,
         ethClient: eth,
         chainId: id,
         account: addr ?? null,
@@ -91,7 +83,7 @@ function App() {
         method: "wallet_revokePermissions",
         params: [{ eth_accounts: {} }],
       });
-      dispatch({ type: "SET_CLIENTS", publicClient: null, walletClient: null, ethClient: null, chainId: null, account: null });
+      dispatch({ type: "SET_CLIENTS", ethClient: null, chainId: null, account: null });
 
     } catch (e) {
       dispatch({ type: "ERROR", error: getErrorMessage(e) });
