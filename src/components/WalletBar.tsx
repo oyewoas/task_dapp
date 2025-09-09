@@ -37,7 +37,7 @@ export function WalletBar({
     return () => {
       active = false;
     };
-  }, [account, publicClient]);
+  }, [account]);
 
   return (
     <div className="w-full max-w-xl mx-auto mb-6 p-6 bg-gradient-to-br from-indigo-50 to-white rounded-2xl shadow-lg flex flex-col gap-4">

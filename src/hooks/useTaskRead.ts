@@ -26,6 +26,6 @@ export function useTaskRead() {
     } finally {
       dispatch({ type: "SET_LOADING", isLoading: false });
     }
-  }, [contractAddress, publicClient, abi, dispatch]);
+  }, [contractAddress, abi, dispatch]);
   return { loadTasks, tasks: state.tasks, isLoading: state.isLoading };
 }
