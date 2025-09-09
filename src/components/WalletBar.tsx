@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Address, Chain } from "viem";
 import { formatEther } from "viem";
 import { useAppState } from "../store/context";
+import { publicClient } from "../utils/client";
 
 export function WalletBar({
   account,
@@ -17,8 +18,6 @@ export function WalletBar({
   onDisconnect: () => void;
 }) {
   const [balance, setBalance] = useState<string>("");
-  const { state } = useAppState();
-  const { publicClient } = state;
 
   useEffect(() => {
     let active = true;
